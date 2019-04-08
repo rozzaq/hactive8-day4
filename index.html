@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>To-Do List</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      rel="stylesheet"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+      crossorigin="anonymous"
+    ></script>
+
+    <style>
+      html {
+        font-family: "Open Sans", sans-serif;
+        background: #323330;
+        color: #323330;
+      }
+      .box {
+        max-width: 380px;
+        margin: 50px auto;
+        background: #f0db4f;
+        border-radius: 5px;
+        box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.3);
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #323330;
+      }
+      .title {
+        text-align: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 24px;
+        padding: 20px;
+      }
+      input[type="text"] {
+        width: 60%;
+        height: 32px;
+        font-size: 16px;
+        padding: 10px;
+        background: none;
+        border: none;
+        border-bottom: 2px solid #323330;
+      }
+      input::placeholder {
+        color: #323330;
+      }
+      input:focus {
+        outline: none;
+      }
+      input:checked + p {
+        background: #d6c349;
+        text-decoration: line-through;
+      }
+      input[type="checkbox"] {
+        margin: 20px;
+      }
+      #todo-submit {
+        background-color: #323330;
+        color: #f0db4f;
+        border: none;
+        border-radius: 5px;
+        height: 32px;
+        margin-left: 20px;
+        font-size: 16px;
+        flex: 1;
+      }
+      #todo-submit:hover {
+        background-color: #4d504b;
+      }
+      p {
+        margin: 0;
+        padding: 20px;
+        transition: background 0.2s;
+        flex: 1;
+        font-size: 20px;
+        font-weight: 200;
+        border-left: 1px solid #323330;
+      }
+      @media(min-width:680px){
+          .box{
+              max-width: 480px;
+          }
+          .title{
+              color: rgb(160, 23, 64);
+          }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div id="title" class="title row">
+        🔥 To-Do List
+      </div>
+      <div class="list">
+        <!-- List of To-Dos will be added here -->
+      </div>
+      <form class="title row">
+        <input id="todo-input" type="text" placeholder="New Todo" />
+        <input id="todo-submit" type="submit" value="+ Todo" />
+      </form>
+    </div>
+
+    <!-- JavScript here -->
+    <script>
+        var todoSubmitBtn = $('#todo-submit');
+        var todoList = JSON.parse(localStorage.getItem('todos'));
+
+        todoSubmitBtn.on('click', addTodo)
+
+        function addTodo(e){
+            e.preventDefault();
+        
+
+            var todoText = $('#todo-input').first().val();
+            var todoItem = {
+                text: todoText,
+                done: false,
+            };
+            todoList.push(todoItem);
+
+            $('#todo-input').first().val('');
+
+            saveTodo();
+
+            var target = $('.list');
+            fillTodos(todoList, target);
+        }
+
+
+        function fillTodos(arr, targetElement){
+            var html = '';
+
+            arr.forEach(function(todo, index) {
+                html += `
+                <div class="row"> 
+                <input type="checkbox" data-index=${index} ${todo.done ? 'checked':false}>
+                <p> ${todo.text}</p>
+                    
+                </div>
+                `
+                
+            });
+            targetElement.html(html);
+
+        }
+
+        function saveTodo(){
+            localStorage.setItem('todos',JSON.stringify(todoList));
+
+        }
+
+        function toggleTodo(event){
+            var target = $(event.target)
+            if (target.is('input')){
+                var index = target.data('index');
+
+                todoList[index].done = !todoList[index].done
+
+                saveTodo();
+
+            }
+            
+        }
+
+        fillTodos(todoList, $('.list'));
+        $('.list').on('click', toggleTodo);
+
+        
+        
+    </script>
+  </body>
+</html>
